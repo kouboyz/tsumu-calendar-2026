@@ -26,7 +26,7 @@ The two scheduling paths intentionally differ: events can be added directly to a
 
 ## Repository-specific conventions
 
-- The app is fixed to the vacation interval July 18-August 31, 2026. Centralize date boundaries and `yyyy-MM-dd` date-key conversion in `src/domain/calendar.ts`; weeks start on Sunday and navigation must remain clamped to the vacation.
+- The app is fixed to the vacation interval July 18-August 26, 2026. Centralize date boundaries and `yyyy-MM-dd` date-key conversion in `src/domain/calendar.ts`; weeks start on Sunday and navigation must remain clamped to the vacation.
 - Homework progress is based on unique completed `homeworkItemId` values, not scheduled-card count. The overall denominator is the full 172-item master, and duplicate cards for the same item must not increase completion.
 - Persisted data uses `STORAGE_KEY = 'tsumu-calendar:v2'` and the version-2 `PlannerState` schema. Any shape change must update the TypeScript types, runtime validation/serialization, storage tests, and versioning or migration strategy together. Invalid stored data is surfaced to the reset UI rather than silently overwritten.
 - Keep dnd-kit payload contracts aligned across producers and `App`: pool cards use `{ type: 'template', templateId }`, planned cards use `{ type: 'card', cardId, date }`, day targets use `{ type: 'day', date }`, and ordering targets use `{ type: 'card-target', cardId, date }`.
