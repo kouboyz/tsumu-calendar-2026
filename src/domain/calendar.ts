@@ -15,7 +15,7 @@ import {
 import { ja } from 'date-fns/locale'
 
 export const VACATION_START = new Date(2026, 6, 18)
-export const VACATION_END = new Date(2026, 7, 31)
+export const VACATION_END = new Date(2026, 7, 26)
 
 export const toDateKey = (date: Date) => format(date, 'yyyy-MM-dd')
 export const fromDateKey = (key: string) => parseISO(key)

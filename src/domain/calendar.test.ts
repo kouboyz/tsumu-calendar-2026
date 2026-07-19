@@ -9,7 +9,7 @@ import {
 describe('calendar domain', () => {
   it('clamps the initial week to the fixed vacation', () => {
     expect(toDateKey(getInitialWeek(new Date(2026, 0, 1)))).toBe('2026-07-12')
-    expect(toDateKey(getInitialWeek(new Date(2026, 9, 1)))).toBe('2026-08-30')
+    expect(toDateKey(getInitialWeek(new Date(2026, 9, 1)))).toBe('2026-08-23')
   })
 
   it('builds a Sunday-to-Saturday week', () => {
@@ -26,7 +26,7 @@ describe('calendar domain', () => {
   })
 
   it('calculates countdown without going below zero', () => {
-    expect(remainingDays(new Date(2026, 6, 19))).toBe(43)
+    expect(remainingDays(new Date(2026, 6, 19))).toBe(38)
     expect(remainingDays(new Date(2026, 7, 31))).toBe(0)
     expect(remainingDays(new Date(2026, 8, 1))).toBe(0)
   })
