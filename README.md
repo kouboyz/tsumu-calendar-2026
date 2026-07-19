@@ -1,6 +1,6 @@
 # MY SUMMER CALENDAR 2026
 
-2026年7月18日〜8月31日の予定と達成状況を、スマートフォンで楽しく管理する週間カレンダーです。React、TypeScript、Tailwind CSS、dnd-kit で構築し、データはブラウザの `localStorage` に保存します。
+2026年7月18日〜8月26日の予定と達成状況を、スマートフォンで楽しく管理する週間カレンダーです。React、TypeScript、Tailwind CSS、dnd-kit で構築し、データはブラウザの `localStorage` に保存します。
 
 ## 開発
 
