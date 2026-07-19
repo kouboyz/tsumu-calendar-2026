@@ -144,13 +144,15 @@ button:focus-visible {
   --card-accent: #b74477;
   position: relative;
   z-index: 1;
-  display: flex;
-  min-height: 51px;
-  align-items: flex-start;
+  display: grid;
+  min-height: 54px;
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto 1fr;
+  align-items: start;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--card-accent) 25%, white);
   border-radius: 9px;
-  padding: 5px 3px 5px 1px;
+  padding: 4px;
   background: var(--card-bg);
   box-shadow: 0 2px 4px rgb(94 46 67 / 10%);
   transition: filter 180ms, transform 180ms, box-shadow 180ms;
@@ -161,53 +163,76 @@ button:focus-visible {
   box-shadow: 0 0 0 2px #fff, 0 0 15px #f4a7c8;
 }
 
-.planner-card--done::before {
-  position: absolute;
-  z-index: 2;
-  top: -3px;
-  right: 0;
-  content: "★";
-  color: #d65e92;
-  font-size: 20px;
-  filter: drop-shadow(0 1px 0 white);
-  transform: rotate(10deg);
-}
-
 .planner-card--incomplete {
   filter: saturate(0.55);
   background: color-mix(in srgb, var(--card-bg) 65%, #e9e5e7);
 }
 
-.planner-card--incomplete::before {
-  position: absolute;
-  z-index: 2;
-  top: -2px;
-  right: 0;
-  content: "💦";
-  font-size: 16px;
-}
-
 .drag-handle {
   position: relative;
   z-index: 3;
-  flex: none;
+  grid-column: 1;
+  grid-row: 1;
   padding: 2px 0;
   color: var(--card-accent);
   touch-action: none;
 }
 
+.planner-card-title {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  min-width: 0;
+  grid-column: 1 / -1;
+  grid-row: 2;
+  align-self: end;
+  padding: 2px 2px 0;
+  text-align: left;
+}
+
+.planner-card-actions {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  grid-column: 3;
+  grid-row: 1;
+  align-items: center;
+  gap: 3px;
+}
+
+.planner-card-result {
+  display: grid;
+  width: 19px;
+  height: 19px;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 72%);
+}
+
+.planner-card-result--completed {
+  color: #d65e92;
+}
+
+.planner-card-result--incomplete {
+  color: #4e7188;
+}
+
 .remove-button {
   position: relative;
   z-index: 3;
+  display: grid;
+  width: 19px;
+  height: 19px;
   flex: none;
+  place-items: center;
   border-radius: 5px;
-  padding: 2px;
   color: color-mix(in srgb, var(--card-accent) 70%, white);
 }
 
 .calendar-grid {
   display: grid;
-  grid-template-columns: repeat(7, minmax(76px, 1fr));
+  grid-template-columns: repeat(7, minmax(120px, 1fr));
   overflow-x: auto;
   border: 1px solid #edd5df;
   border-radius: 14px;
@@ -486,10 +511,6 @@ button:focus-visible {
 
   .card-scroll {
     grid-auto-columns: 112px;
-  }
-
-  .calendar-grid {
-    grid-template-columns: repeat(7, minmax(0, 1fr));
   }
 
   .day-column {
