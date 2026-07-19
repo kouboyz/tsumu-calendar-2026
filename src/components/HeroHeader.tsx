@@ -1,6 +1,5 @@
 import { Sparkles } from 'lucide-react'
 import hero from '../assets/girls2/hero.webp'
-import logo from '../assets/girls2/logo.webp'
 
 type HeroHeaderProps = {
   daysLeft: number
@@ -23,11 +22,6 @@ export function HeroHeader({
         className="h-full w-full object-cover object-center"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-[#351326]/90 via-transparent to-white/15" />
-      <img
-        src={logo}
-        alt="Girls²"
-        className="absolute left-4 top-4 w-28 drop-shadow-[0_2px_8px_rgba(255,255,255,.9)] sm:w-36"
-      />
       <div className="absolute inset-x-4 bottom-4 text-white">
         <div className="mb-2 flex items-end justify-between gap-4">
           <div>

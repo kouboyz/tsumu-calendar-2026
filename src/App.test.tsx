@@ -34,9 +34,32 @@ describe('App', () => {
       within(outcomeDialog).getByRole('button', { name: '終わった' }),
     )
 
-    expect(screen.getByText('⭐ 終わった')).toBeInTheDocument()
+    expect(
+      screen.getByRole('img', { name: 'ワーク P36: 終わった' }),
+    ).toBeInTheDocument()
+    expect(screen.queryByText('⭐ 終わった')).not.toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'ワーク P36を削除' }),
+    ).toBeInTheDocument()
     expect(
       screen.getByRole('progressbar', { name: '数学の進捗' }),
     ).toHaveAttribute('aria-valuenow', '4')
+
+    await user.click(
+      screen.getByRole('button', { name: 'ワーク P36の結果を記録' }),
+    )
+    await user.click(
+      within(screen.getByRole('dialog')).getByRole('button', {
+        name: '終わらなかった',
+      }),
+    )
+
+    expect(
+      screen.getByRole('img', { name: 'ワーク P36: 終わらなかった' }),
+    ).toBeInTheDocument()
+    expect(screen.queryByText('💦 終わらなかった')).not.toBeInTheDocument()
+    expect(
+      screen.getByRole('progressbar', { name: '数学の進捗' }),
+    ).toHaveAttribute('aria-valuenow', '0')
   })
 })

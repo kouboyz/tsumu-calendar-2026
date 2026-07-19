@@ -1,6 +1,6 @@
 import { useDraggable, useDroppable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, Trash2 } from 'lucide-react'
+import { Droplets, GripVertical, Star, Trash2 } from 'lucide-react'
 import type { CSSProperties } from 'react'
 import { templateById } from '../domain/templates'
 import type { PlannedCard } from '../domain/types'
@@ -60,29 +60,42 @@ export function PlannerCard({
       </button>
       <button
         type="button"
-        className="min-w-0 flex-1 text-left"
+        className="planner-card-title"
         onClick={onSelect}
         aria-label={`${title}の結果を記録`}
       >
         <span className="block truncate text-[11px] font-extrabold leading-tight text-[var(--card-accent)]">
           {title}
         </span>
-        {card.outcome !== 'pending' && (
-          <span className="mt-1 block text-[8px] font-black text-[#B74477]">
-            {card.outcome === 'completed'
-              ? '⭐ 終わった'
-              : '💦 終わらなかった'}
+      </button>
+      <div className="planner-card-actions">
+        {card.outcome === 'completed' && (
+          <span
+            className="planner-card-result planner-card-result--completed"
+            role="img"
+            aria-label={`${title}: 終わった`}
+          >
+            <Star size={15} fill="currentColor" />
           </span>
         )}
-      </button>
-      <button
-        type="button"
-        className="remove-button"
-        aria-label={`${title}を削除`}
-        onClick={onRemove}
-      >
-        <Trash2 size={12} />
-      </button>
+        {card.outcome === 'incomplete' && (
+          <span
+            className="planner-card-result planner-card-result--incomplete"
+            role="img"
+            aria-label={`${title}: 終わらなかった`}
+          >
+            <Droplets size={15} />
+          </span>
+        )}
+        <button
+          type="button"
+          className="remove-button"
+          aria-label={`${title}を削除`}
+          onClick={onRemove}
+        >
+          <Trash2 size={13} />
+        </button>
+      </div>
     </article>
   )
 }
