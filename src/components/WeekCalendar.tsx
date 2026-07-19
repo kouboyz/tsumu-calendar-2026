@@ -17,16 +17,14 @@ import { PlannerCard } from './PlannerCard'
 type DayColumnProps = {
   date: Date
   cards: PlannedCard[]
-  todayKey: string
-  onToggle: (cardId: string) => void
+  onSelect: (card: PlannedCard) => void
   onRemove: (cardId: string) => void
 }
 
 function DayColumn({
   date,
   cards,
-  todayKey,
-  onToggle,
+  onSelect,
   onRemove,
 }: DayColumnProps) {
   const dateKey = toDateKey(date)
@@ -56,8 +54,7 @@ function DayColumn({
           <PlannerCard
             key={card.id}
             card={card}
-            canComplete={card.date === todayKey}
-            onToggle={() => onToggle(card.id)}
+            onSelect={() => onSelect(card)}
             onRemove={() => onRemove(card.id)}
           />
         ))}
@@ -69,18 +66,16 @@ function DayColumn({
 type WeekCalendarProps = {
   weekStart: Date
   cards: PlannedCard[]
-  todayKey: string
   onWeekChange: (date: Date) => void
-  onToggle: (cardId: string) => void
+  onSelect: (card: PlannedCard) => void
   onRemove: (cardId: string) => void
 }
 
 export function WeekCalendar({
   weekStart,
   cards,
-  todayKey,
   onWeekChange,
-  onToggle,
+  onSelect,
   onRemove,
 }: WeekCalendarProps) {
   const touchStart = useRef<number | null>(null)
@@ -149,15 +144,14 @@ export function WeekCalendar({
               key={dateKey}
               date={date}
               cards={cards.filter((card) => card.date === dateKey)}
-              todayKey={todayKey}
-              onToggle={onToggle}
+              onSelect={onSelect}
               onRemove={onRemove}
             />
           )
         })}
       </div>
       <p className="mt-3 rounded-xl bg-[#FFF3F8] px-3 py-2 text-center text-[10px] font-bold text-[#A3436C]">
-        今日のカードをタップすると ⭐ がつくよ！
+        カードをタップして ⭐ 終わった／💦 終わらなかった を記録
       </p>
     </section>
   )

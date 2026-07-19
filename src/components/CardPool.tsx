@@ -3,17 +3,30 @@ import { CSS } from '@dnd-kit/utilities'
 import { CalendarPlus, GripVertical, PartyPopper } from 'lucide-react'
 import { useState, type CSSProperties } from 'react'
 import {
+  homeworkProgress,
+  subjectFromTemplateId,
+} from '../domain/homeworkProgress'
+import {
   eventTemplates,
   homeworkTemplates,
 } from '../domain/templates'
-import type { CardKind, CardTemplate } from '../domain/types'
+import type {
+  CardKind,
+  CardTemplate,
+  PlannedCard,
+} from '../domain/types'
 
 type PoolCardProps = {
   template: CardTemplate
+  progress?: {
+    completed: number
+    total: number
+    percent: number
+  }
   onSelect: (template: CardTemplate) => void
 }
 
-function PoolCard({ template, onSelect }: PoolCardProps) {
+function PoolCard({ template, progress, onSelect }: PoolCardProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
       id: `template:${template.id}`,
@@ -52,22 +65,49 @@ function PoolCard({ template, onSelect }: PoolCardProps) {
         <strong className="mt-2 block max-w-full text-xs leading-tight text-[var(--card-accent)]">
           {template.label}
         </strong>
-        <span className="mt-1 flex items-center gap-1 text-[9px] font-bold text-[var(--card-accent)]/70">
-          <CalendarPlus size={11} />
-          タップで追加
-        </span>
+        {progress ? (
+          <span className="mt-1 block w-full">
+            <span className="flex justify-between text-[8px] font-black text-[var(--card-accent)]">
+              <span>進捗</span>
+              <span>{progress.completed}/{progress.total}</span>
+            </span>
+            <span
+              className="mt-0.5 block h-1.5 overflow-hidden rounded-full bg-white/65"
+              role="progressbar"
+              aria-label={`${template.label}の進捗`}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={progress.percent}
+            >
+              <span
+                className="block h-full rounded-full bg-[var(--card-accent)] transition-[width]"
+                style={{ width: `${progress.percent}%` }}
+              />
+            </span>
+          </span>
+        ) : (
+          <span className="mt-1 flex items-center gap-1 text-[9px] font-bold text-[var(--card-accent)]/70">
+            <CalendarPlus size={11} />
+            タップで追加
+          </span>
+        )}
       </button>
     </article>
   )
 }
 
 type CardPoolProps = {
+  cards: PlannedCard[]
   onSelect: (template: CardTemplate) => void
 }
 
-export function CardPool({ onSelect }: CardPoolProps) {
+export function CardPool({ cards, onSelect }: CardPoolProps) {
   const [tab, setTab] = useState<CardKind>('homework')
   const templates = tab === 'homework' ? homeworkTemplates : eventTemplates
+  const progressFor = (template: CardTemplate) => {
+    const subject = subjectFromTemplateId(template.id)
+    return subject ? homeworkProgress(cards, subject) : undefined
+  }
 
   return (
     <section aria-labelledby="pool-title" className="section-card">
@@ -103,7 +143,13 @@ export function CardPool({ onSelect }: CardPoolProps) {
       <div className="card-scroll" role="list">
         {templates.map((template) => (
           <div role="listitem" key={template.id}>
-            <PoolCard template={template} onSelect={onSelect} />
+            <PoolCard
+              template={template}
+              progress={
+                template.kind === 'homework' ? progressFor(template) : undefined
+              }
+              onSelect={onSelect}
+            />
           </div>
         ))}
       </div>

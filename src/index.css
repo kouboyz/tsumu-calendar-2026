@@ -1,4 +1,5 @@
-@import "tailwindcss";
+@import "tailwindcss" source(none);
+@source "./**/*.{ts,tsx}";
 
 :root {
   font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif;
@@ -172,6 +173,20 @@ button:focus-visible {
   transform: rotate(10deg);
 }
 
+.planner-card--incomplete {
+  filter: saturate(0.55);
+  background: color-mix(in srgb, var(--card-bg) 65%, #e9e5e7);
+}
+
+.planner-card--incomplete::before {
+  position: absolute;
+  z-index: 2;
+  top: -2px;
+  right: 0;
+  content: "💦";
+  font-size: 16px;
+}
+
 .drag-handle {
   position: relative;
   z-index: 3;
@@ -300,6 +315,120 @@ button:focus-visible {
   box-shadow: 0 20px 80px rgb(55 22 38 / 30%);
 }
 
+.homework-dialog {
+  width: min(calc(100% - 24px), 540px);
+  max-width: none;
+  max-height: min(82dvh, 720px);
+  margin: auto auto 12px;
+  overflow-y: auto;
+  border: 1px solid #edcddd;
+  border-radius: 24px;
+  padding: 18px;
+  color: #442a37;
+  background: #fff;
+  box-shadow: 0 20px 80px rgb(55 22 38 / 30%);
+}
+
+.homework-dialog::backdrop,
+.outcome-dialog::backdrop {
+  background: rgb(49 23 36 / 52%);
+  backdrop-filter: blur(3px);
+}
+
+.homework-group {
+  overflow: hidden;
+  border: 1px solid #f0d3df;
+  border-radius: 14px;
+  background: #fffafd;
+}
+
+.homework-group summary {
+  display: flex;
+  min-height: 46px;
+  cursor: pointer;
+  list-style: none;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  color: #713e55;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.homework-group summary::-webkit-details-marker {
+  display: none;
+}
+
+.homework-group[open] .details-chevron {
+  transform: rotate(90deg);
+}
+
+.details-chevron {
+  transition: transform 150ms;
+}
+
+.homework-row {
+  display: flex;
+  width: 100%;
+  min-height: 48px;
+  align-items: center;
+  gap: 9px;
+  border-bottom: 1px solid #f5e6ec;
+  padding: 7px 11px;
+  background: white;
+}
+
+.homework-row:last-child {
+  border-bottom: 0;
+}
+
+.homework-row:active {
+  background: #fff1f7;
+}
+
+.outcome-dialog {
+  width: min(calc(100% - 24px), 420px);
+  max-width: none;
+  margin: auto auto 12px;
+  border: 1px solid #edcddd;
+  border-radius: 24px;
+  padding: 18px;
+  color: #442a37;
+  background: #fff;
+  box-shadow: 0 20px 80px rgb(55 22 38 / 30%);
+}
+
+.outcome-choice {
+  display: flex;
+  min-height: 94px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 2px solid transparent;
+  border-radius: 17px;
+  font-size: 30px;
+}
+
+.outcome-choice strong {
+  font-size: 12px;
+}
+
+.outcome-choice--completed {
+  color: #a43e6a;
+  background: #fff0f6;
+}
+
+.outcome-choice--incomplete {
+  color: #4e7188;
+  background: #edf8ff;
+}
+
+.outcome-choice[aria-pressed="true"] {
+  border-color: currentcolor;
+  box-shadow: 0 0 0 2px white, 0 0 0 4px currentcolor;
+}
+
 .date-dialog::backdrop {
   background: rgb(49 23 36 / 52%);
   backdrop-filter: blur(3px);
@@ -368,6 +497,11 @@ button:focus-visible {
   }
 
   .date-dialog {
+    margin: auto;
+  }
+
+  .homework-dialog,
+  .outcome-dialog {
     margin: auto;
   }
 }

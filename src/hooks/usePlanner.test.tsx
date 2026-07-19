@@ -6,39 +6,44 @@ import { usePlanner } from './usePlanner'
 describe('usePlanner', () => {
   beforeEach(() => localStorage.clear())
 
-  it('adds numbered homework, moves it, and persists changes', async () => {
+  it('adds a master homework item, moves it, and persists changes', async () => {
     const { result } = renderHook(() => usePlanner())
 
     act(() => {
-      result.current.addCard('homework-math', '2026-07-19')
-      result.current.addCard('homework-math', '2026-07-20')
+      result.current.addCard(
+        'homework-math',
+        '2026-07-19',
+        'math-work-page-36',
+      )
     })
 
-    expect(result.current.cards.map((card) => card.title)).toEqual([
-      '数学 1',
-      '数学 2',
-    ])
+    expect(result.current.cards[0]).toMatchObject({
+      title: 'ワーク P36',
+      homeworkItemId: 'math-work-page-36',
+      outcome: 'pending',
+    })
 
     const firstId = result.current.cards[0]!.id
     act(() => result.current.moveCard(firstId, '2026-07-21'))
-    expect(result.current.cards.find((card) => card.id === firstId)?.date).toBe(
-      '2026-07-21',
-    )
+    expect(result.current.cards[0]!.date).toBe('2026-07-21')
 
     await waitFor(() => {
-      expect(localStorage.getItem(STORAGE_KEY)).toContain('数学 1')
+      expect(localStorage.getItem(STORAGE_KEY)).toContain('math-work-page-36')
     })
   })
 
-  it('only toggles completion for a card on today', () => {
+  it('records all three mission outcomes', () => {
     const { result } = renderHook(() => usePlanner())
-    act(() => result.current.addCard('event-festival', '2026-07-19'))
+    act(() => result.current.addCard('event-lesson', '2026-07-19'))
     const id = result.current.cards[0]!.id
 
-    act(() => result.current.toggleComplete(id, '2026-07-20'))
-    expect(result.current.cards[0]!.completed).toBe(false)
+    act(() => result.current.setOutcome(id, 'incomplete'))
+    expect(result.current.cards[0]!.outcome).toBe('incomplete')
 
-    act(() => result.current.toggleComplete(id, '2026-07-19'))
-    expect(result.current.cards[0]!.completed).toBe(true)
+    act(() => result.current.setOutcome(id, 'completed'))
+    expect(result.current.cards[0]!.outcome).toBe('completed')
+
+    act(() => result.current.setOutcome(id, 'pending'))
+    expect(result.current.cards[0]!.outcome).toBe('pending')
   })
 })

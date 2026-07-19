@@ -11,7 +11,6 @@ const subjects = [
   ['art', '美術', '🎨', '#FFF0BD', '#B47A17'],
   ['technology', '技術', '⚙️', '#D8EFF3', '#3F7C87'],
   ['home-economics', '家庭', '🧵', '#FFE1D4', '#BD6647'],
-  ['pe', '保体', '🏃', '#D9F0CA', '#5F8A3B'],
 ] as const
 
 export const homeworkTemplates: CardTemplate[] = subjects.map(
@@ -28,18 +27,18 @@ export const homeworkTemplates: CardTemplate[] = subjects.map(
 export const eventTemplates: CardTemplate[] = [
   {
     id: 'event-friends',
-    label: '友だちとお出かけ',
+    label: '友だち',
     icon: '💞',
     color: '#FFE0F0',
     accent: '#C94384',
     kind: 'event',
   },
   {
-    id: 'event-festival',
-    label: 'お祭り',
-    icon: '🎆',
-    color: '#E6DFFF',
-    accent: '#6F4FBB',
+    id: 'event-lesson',
+    label: '習い事',
+    icon: '🌺',
+    color: '#FFE3D5',
+    accent: '#C65E46',
     kind: 'event',
   },
   {

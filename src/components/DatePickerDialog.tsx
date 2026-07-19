@@ -7,17 +7,28 @@ import {
   isVacationDate,
   toDateKey,
 } from '../domain/calendar'
+import type { HomeworkItem } from '../data/homework'
 import type { CardTemplate } from '../domain/types'
+import { isDialogBackdropClick } from './dialog'
+
+export type DateSelection = {
+  template: CardTemplate
+  homeworkItem?: HomeworkItem
+}
 
 type DatePickerDialogProps = {
-  template: CardTemplate | null
+  selection: DateSelection | null
   weekStart: Date
   onClose: () => void
-  onAdd: (templateId: string, date: string) => void
+  onAdd: (
+    templateId: string,
+    date: string,
+    homeworkItemId?: string,
+  ) => void
 }
 
 export function DatePickerDialog({
-  template,
+  selection,
   weekStart,
   onClose,
   onAdd,
@@ -26,11 +37,12 @@ export function DatePickerDialog({
 
   useEffect(() => {
     const dialog = dialogRef.current
-    if (template && dialog && !dialog.open) dialog.showModal()
-    if (!template && dialog?.open) dialog.close()
-  }, [template])
+    if (selection && dialog && !dialog.open) dialog.showModal()
+    if (!selection && dialog?.open) dialog.close()
+  }, [selection])
 
-  if (!template) return null
+  if (!selection) return null
+  const { template, homeworkItem } = selection
 
   return (
     <dialog
@@ -38,15 +50,20 @@ export function DatePickerDialog({
       className="date-dialog"
       onClose={onClose}
       onClick={(event) => {
-        if (event.target === dialogRef.current) onClose()
+        if (isDialogBackdropClick(event, dialogRef.current)) onClose()
       }}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="eyebrow">ADD TO CALENDAR</p>
           <h2 className="text-lg font-black text-[#442A37]">
-            {template.icon} {template.label}をいつやる？
+            {template.icon} {homeworkItem?.title ?? template.label}をいつやる？
           </h2>
+          {homeworkItem?.group && (
+            <p className="mt-0.5 text-[10px] font-bold text-[#A46C84]">
+              {homeworkItem.group}
+            </p>
+          )}
         </div>
         <button
           type="button"
@@ -67,7 +84,7 @@ export function DatePickerDialog({
               disabled={!enabled}
               className="date-choice"
               onClick={() => {
-                onAdd(template.id, toDateKey(date))
+                onAdd(template.id, toDateKey(date), homeworkItem?.id)
                 onClose()
               }}
             >

@@ -1,4 +1,5 @@
 export type CardKind = 'homework' | 'event'
+export type MissionOutcome = 'pending' | 'completed' | 'incomplete'
 
 export type CardTemplate = {
   id: string
@@ -15,11 +16,12 @@ export type PlannedCard = {
   title: string
   kind: CardKind
   date: string
-  completed: boolean
+  homeworkItemId?: string
+  outcome: MissionOutcome
   createdAt: number
 }
 
 export type PlannerState = {
-  version: 1
+  version: 2
   cards: PlannedCard[]
 }

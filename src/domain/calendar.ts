@@ -13,7 +13,6 @@ import {
   startOfWeek,
 } from 'date-fns'
 import { ja } from 'date-fns/locale'
-import type { PlannedCard } from './types'
 
 export const VACATION_START = new Date(2026, 6, 18)
 export const VACATION_END = new Date(2026, 7, 31)
@@ -53,13 +52,6 @@ export const remainingDays = (today = new Date()) => {
   }
   if (isAfter(day, VACATION_END)) return 0
   return differenceInCalendarDays(VACATION_END, day)
-}
-
-export const progressPercent = (cards: PlannedCard[]) => {
-  if (cards.length === 0) return 0
-  return Math.round(
-    (cards.filter((card) => card.completed).length / cards.length) * 100,
-  )
 }
 
 export const formatWeekRange = (weekStart: Date) => {

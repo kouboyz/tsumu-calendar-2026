@@ -1,11 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { templateById } from '../domain/templates'
 import {
+  homeworkItemById,
+  homeworkItemTitle,
+} from '../data/homework'
+import {
   parsePlannerState,
   serializePlannerState,
   STORAGE_KEY,
 } from '../domain/storage'
-import type { PlannedCard } from '../domain/types'
+import type { MissionOutcome, PlannedCard } from '../domain/types'
 
 type LoadedState = {
   cards: PlannedCard[]
@@ -45,21 +49,34 @@ export function usePlanner() {
     }
   }, [cards])
 
-  const addCard = useCallback((templateId: string, date: string) => {
+  const addCard = useCallback((
+    templateId: string,
+    date: string,
+    homeworkItemId?: string,
+  ) => {
     const template = templateById.get(templateId)
     if (!template) return
+    const homeworkItem = homeworkItemId
+      ? homeworkItemById.get(homeworkItemId)
+      : undefined
+    if (homeworkItemId && !homeworkItem) return
     setCards((current) => {
       const number =
-        template.kind === 'homework'
+        template.kind === 'homework' && !homeworkItem
           ? current.filter((card) => card.templateId === templateId).length + 1
           : null
       const card: PlannedCard = {
         id: createId(),
         templateId,
-        title: number ? `${template.label} ${number}` : template.label,
+        title: homeworkItem
+          ? homeworkItemTitle(homeworkItem)
+          : number
+            ? `${template.label} ${number}`
+            : template.label,
         kind: template.kind,
         date,
-        completed: false,
+        ...(homeworkItem ? { homeworkItemId: homeworkItem.id } : {}),
+        outcome: 'pending',
         createdAt: Date.now(),
       }
       return [...current, card]
@@ -88,11 +105,14 @@ export function usePlanner() {
     [],
   )
 
-  const toggleComplete = useCallback((cardId: string, todayKey: string) => {
+  const setOutcome = useCallback((
+    cardId: string,
+    outcome: MissionOutcome,
+  ) => {
     setCards((current) =>
       current.map((card) =>
-        card.id === cardId && card.date === todayKey
-          ? { ...card, completed: !card.completed }
+        card.id === cardId
+          ? { ...card, outcome }
           : card,
       ),
     )
@@ -118,7 +138,7 @@ export function usePlanner() {
     storageError,
     addCard,
     moveCard,
-    toggleComplete,
+    setOutcome,
     removeCard,
     resetStorage,
   }
