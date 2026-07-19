@@ -1,24 +1,24 @@
 import { useDraggable, useDroppable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
-import { Check, GripVertical, Trash2 } from 'lucide-react'
+import { GripVertical, Trash2 } from 'lucide-react'
 import type { CSSProperties } from 'react'
 import { templateById } from '../domain/templates'
 import type { PlannedCard } from '../domain/types'
 
 type PlannerCardProps = {
   card: PlannedCard
-  canComplete: boolean
-  onToggle: () => void
+  onSelect: () => void
   onRemove: () => void
 }
 
 export function PlannerCard({
   card,
-  canComplete,
-  onToggle,
+  onSelect,
   onRemove,
 }: PlannerCardProps) {
   const template = templateById.get(card.templateId)
+  const title =
+    card.kind === 'event' && template ? template.label : card.title
   const {
     attributes,
     listeners,
@@ -47,12 +47,12 @@ export function PlannerCard({
     <article
       ref={setRefs}
       style={style}
-      className={`planner-card ${card.kind === 'event' ? 'planner-card--event' : ''} ${card.completed ? 'planner-card--done' : ''} ${isDragging ? 'opacity-40' : ''}`}
+      className={`planner-card ${card.kind === 'event' ? 'planner-card--event' : ''} ${card.outcome === 'completed' ? 'planner-card--done' : ''} ${card.outcome === 'incomplete' ? 'planner-card--incomplete' : ''} ${isDragging ? 'opacity-40' : ''}`}
     >
       <button
         type="button"
         className="drag-handle"
-        aria-label={`${card.title}を移動`}
+        aria-label={`${title}を移動`}
         {...listeners}
         {...attributes}
       >
@@ -61,27 +61,24 @@ export function PlannerCard({
       <button
         type="button"
         className="min-w-0 flex-1 text-left"
-        disabled={!canComplete}
-        onClick={onToggle}
-        aria-label={
-          canComplete
-            ? `${card.title}を${card.completed ? '未完了に戻す' : '完了にする'}`
-            : `${card.title}（完了チェックは当日だけ）`
-        }
+        onClick={onSelect}
+        aria-label={`${title}の結果を記録`}
       >
         <span className="block truncate text-[11px] font-extrabold leading-tight text-[var(--card-accent)]">
-          {card.title}
+          {title}
         </span>
-        {card.completed && (
-          <span className="mt-1 flex items-center gap-1 text-[9px] font-black text-[#B74477]">
-            <Check size={11} strokeWidth={4} /> COMPLETE ★
+        {card.outcome !== 'pending' && (
+          <span className="mt-1 block text-[8px] font-black text-[#B74477]">
+            {card.outcome === 'completed'
+              ? '⭐ 終わった'
+              : '💦 終わらなかった'}
           </span>
         )}
       </button>
       <button
         type="button"
         className="remove-button"
-        aria-label={`${card.title}を削除`}
+        aria-label={`${title}を削除`}
         onClick={onRemove}
       >
         <Trash2 size={12} />

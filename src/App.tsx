@@ -12,17 +12,25 @@ import {
 import { AlertTriangle, Sparkles } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { CardPool } from './components/CardPool'
-import { DatePickerDialog } from './components/DatePickerDialog'
+import {
+  DatePickerDialog,
+  type DateSelection,
+} from './components/DatePickerDialog'
 import { HeroHeader } from './components/HeroHeader'
+import {
+  HomeworkPickerDialog,
+  type HomeworkSelection,
+} from './components/HomeworkPickerDialog'
+import { MissionOutcomeDialog } from './components/MissionOutcomeDialog'
+import { SummerRules } from './components/SummerRules'
 import { WeekCalendar } from './components/WeekCalendar'
 import {
   getInitialWeek,
-  progressPercent,
   remainingDays,
-  toDateKey,
 } from './domain/calendar'
+import { homeworkProgress } from './domain/homeworkProgress'
 import { templateById } from './domain/templates'
-import type { CardTemplate } from './domain/types'
+import type { CardTemplate, PlannedCard } from './domain/types'
 import { usePlanner } from './hooks/usePlanner'
 
 function App() {
@@ -31,13 +39,16 @@ function App() {
     storageError,
     addCard,
     moveCard,
-    toggleComplete,
+    setOutcome,
     removeCard,
     resetStorage,
   } = usePlanner()
   const [weekStart, setWeekStart] = useState(() => getInitialWeek())
-  const [selectedTemplate, setSelectedTemplate] =
-    useState<CardTemplate | null>(null)
+  const [dateSelection, setDateSelection] =
+    useState<DateSelection | null>(null)
+  const [homeworkSelection, setHomeworkSelection] =
+    useState<HomeworkSelection | null>(null)
+  const [outcomeCard, setOutcomeCard] = useState<PlannedCard | null>(null)
   const [activeLabel, setActiveLabel] = useState<string | null>(null)
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -46,12 +57,15 @@ function App() {
     }),
     useSensor(KeyboardSensor),
   )
-  const todayKey = toDateKey(new Date())
-  const progress = progressPercent(cards)
-  const completed = useMemo(
-    () => cards.filter((card) => card.completed).length,
-    [cards],
-  )
+  const homework = useMemo(() => homeworkProgress(cards), [cards])
+
+  const selectTemplate = (template: CardTemplate) => {
+    if (template.kind === 'homework') {
+      setHomeworkSelection({ template })
+    } else {
+      setDateSelection({ template })
+    }
+  }
 
   const handleDragStart = ({ active }: DragStartEvent) => {
     const data = active.data.current
@@ -76,7 +90,13 @@ function App() {
         : null
     if (!date) return
     if (activeData.type === 'template') {
-      addCard(String(activeData.templateId), date)
+      const template = templateById.get(String(activeData.templateId))
+      if (!template) return
+      if (template.kind === 'homework') {
+        setHomeworkSelection({ template, targetDate: date })
+      } else {
+        addCard(template.id, date)
+      }
     } else if (activeData.type === 'card') {
       moveCard(
         String(activeData.cardId),
@@ -96,9 +116,9 @@ function App() {
       <main className="mx-auto min-h-screen w-full max-w-3xl px-3 py-3 sm:px-6 sm:py-6">
         <HeroHeader
           daysLeft={remainingDays()}
-          progress={progress}
-          completed={completed}
-          total={cards.length}
+          progress={homework.percent}
+          completed={homework.completed}
+          total={homework.total}
         />
         {storageError && (
           <div role="alert" className="error-banner">
@@ -110,15 +130,15 @@ function App() {
           </div>
         )}
         <div className="mt-4 space-y-4">
-          <CardPool onSelect={setSelectedTemplate} />
+          <CardPool cards={cards} onSelect={selectTemplate} />
           <WeekCalendar
             weekStart={weekStart}
             cards={cards}
-            todayKey={todayKey}
             onWeekChange={setWeekStart}
-            onToggle={(cardId) => toggleComplete(cardId, todayKey)}
+            onSelect={setOutcomeCard}
             onRemove={removeCard}
           />
+          <SummerRules />
         </div>
         <footer className="py-6 text-center">
           <p className="flex items-center justify-center gap-1 text-xs font-black text-[#D65E92]">
@@ -132,10 +152,35 @@ function App() {
         </footer>
       </main>
       <DatePickerDialog
-        template={selectedTemplate}
+        selection={dateSelection}
         weekStart={weekStart}
-        onClose={() => setSelectedTemplate(null)}
+        onClose={() => setDateSelection(null)}
         onAdd={addCard}
+      />
+      <HomeworkPickerDialog
+        selection={homeworkSelection}
+        cards={cards}
+        onClose={() => setHomeworkSelection(null)}
+        onSelect={(item) => {
+          const selection = homeworkSelection
+          if (!selection) return
+          if (selection.targetDate) {
+            addCard(selection.template.id, selection.targetDate, item.id)
+          } else {
+            setDateSelection({
+              template: selection.template,
+              homeworkItem: item,
+            })
+          }
+          setHomeworkSelection(null)
+        }}
+      />
+      <MissionOutcomeDialog
+        card={outcomeCard}
+        onClose={() => setOutcomeCard(null)}
+        onSelect={(outcome) => {
+          if (outcomeCard) setOutcome(outcomeCard.id, outcome)
+        }}
       />
       <DragOverlay>
         {activeLabel && (

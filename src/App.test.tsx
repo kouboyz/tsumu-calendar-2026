@@ -12,18 +12,31 @@ describe('App', () => {
 
   afterEach(() => vi.useRealTimers())
 
-  it('adds a homework card by tapping and completes today’s card', async () => {
+  it('selects master homework, schedules it, and records the result', async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     render(<App />)
 
     await user.click(screen.getByRole('button', { name: '数学を日付に追加' }))
-    const dialog = screen.getByRole('dialog')
-    await user.click(within(dialog).getByRole('button', { name: '日19' }))
-
-    expect(screen.getByText('数学 1')).toBeInTheDocument()
+    const homeworkDialog = screen.getByRole('dialog')
     await user.click(
-      screen.getByRole('button', { name: '数学 1を完了にする' }),
+      within(homeworkDialog).getByRole('button', { name: /ワーク P36/ }),
     )
-    expect(screen.getByText('COMPLETE ★')).toBeInTheDocument()
+
+    const dateDialog = screen.getByRole('dialog')
+    await user.click(within(dateDialog).getByRole('button', { name: '月20' }))
+    expect(screen.getByText('ワーク P36')).toBeInTheDocument()
+
+    await user.click(
+      screen.getByRole('button', { name: 'ワーク P36の結果を記録' }),
+    )
+    const outcomeDialog = screen.getByRole('dialog')
+    await user.click(
+      within(outcomeDialog).getByRole('button', { name: '終わった' }),
+    )
+
+    expect(screen.getByText('⭐ 終わった')).toBeInTheDocument()
+    expect(
+      screen.getByRole('progressbar', { name: '数学の進捗' }),
+    ).toHaveAttribute('aria-valuenow', '4')
   })
 })

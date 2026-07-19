@@ -2,21 +2,9 @@ import { describe, expect, it } from 'vitest'
 import {
   getInitialWeek,
   getWeekDays,
-  progressPercent,
   remainingDays,
   toDateKey,
 } from './calendar'
-import type { PlannedCard } from './types'
-
-const card = (completed: boolean): PlannedCard => ({
-  id: crypto.randomUUID(),
-  templateId: 'homework-math',
-  title: '数学 1',
-  kind: 'homework',
-  date: '2026-07-19',
-  completed,
-  createdAt: 1,
-})
 
 describe('calendar domain', () => {
   it('clamps the initial week to the fixed vacation', () => {
@@ -41,10 +29,5 @@ describe('calendar domain', () => {
     expect(remainingDays(new Date(2026, 6, 19))).toBe(43)
     expect(remainingDays(new Date(2026, 7, 31))).toBe(0)
     expect(remainingDays(new Date(2026, 8, 1))).toBe(0)
-  })
-
-  it('calculates progress from completed cards', () => {
-    expect(progressPercent([])).toBe(0)
-    expect(progressPercent([card(true), card(false), card(true)])).toBe(67)
   })
 })
