@@ -29,7 +29,7 @@ export const parsePlannerState = (raw: string): PlannerState => {
   ) {
     throw new Error('対応していない保存データです。')
   }
-  return { version: 1, cards: state.cards }
+  return { version: 1, cards: state.cards as PlannedCard[] }
 }
 
 export const serializePlannerState = (cards: PlannedCard[]) =>
